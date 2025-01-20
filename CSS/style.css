@@ -1,0 +1,133 @@
+
+form {
+    width: 400px;
+    margin: 20px auto;
+    display: flex; /* Esto alinea los elementos horizontalmente */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Alinear verticalmente */
+    gap: 20px;
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+}
+
+.poke-card {
+    position: relative;
+    height: fit-content;
+    font-family: 'Roboto Mono', monospace;
+    max-width: 300px;
+    border-radius: 4px;
+    color: #000;
+    text-align: center;
+    padding: 10px;
+    margin: 0 auto;
+    background-color: #FFF;
+    border: 1px solid black;
+    gap: 20px;
+}
+
+.poke-card a {
+    color: black;
+    text-decoration: none;
+}
+
+.poke-card::before {
+    content: '';
+    background: radial-gradient(black 33%, transparent 33%);
+    background-size: 3px 3px;
+    border-radius: 4px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: -1;
+}
+
+.img-container {
+    position: relative;
+    width: 180px;
+    margin: 10px auto;
+}
+
+.poke-stats div {
+    display: flex;
+    justify-content: space-between;
+    align-content: space-between;
+    padding: 5px;
+    font-size: 18px;
+}
+
+.poke-types div {
+    padding: 5px;
+    margin: 5px;
+    border-radius: 4px;
+    border: 1px dashed black;
+}
+
+.poke-img {
+    width: 180px;
+    border-radius: 50%;
+}
+
+/* .poke-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Cartas ajustables 
+    gap: 16px; Espaciado entre cartas 
+    padding: 16px;  Espaciado interno 
+} */
+
+
+/* detalles */
+
+.hidden {
+    display: none;
+}
+
+.poke-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; /* Espaciado entre cartas */
+    padding: 16px;
+}
+
+.poke-card {
+    width: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+} 
+
+.poke-detail {
+    padding: 20px;
+    border: 1px solidi #ccc;
+    margin-top: 20px;
+    display: none;  /* Ocultado por defecto  */
+}
+
+.poke-img {
+    width: 100%;
+    height: auto;
+}
+
+.poke-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.poke-types div {
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+/* ivs */
+.hidden {
+    display: none;
+}
