@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperación</title>
+    <!-- <script src="JS/idioma.js" defer></script> -->
+    <script src="JS/appEN.js" defer></script>
+    <script src="JS/traduccion.js"></script>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="icon" href="img/poke.png">
+</head>
+<body>
+
+    <header>
+        <h1>Pokédex</h1>
+    </header>
+
+    <div class="pagination-controls">
+        <button id="prevButton">Previous</button>
+        <button id="nextButton">Next</button>
+        <button id="backButton" hidden>Back</button>
+        <a href="index.html"><button>Change Language</button></a>
+    <link rel="icon" href="img/poke.png">
+
+    </div>
+
+    <form action="" onsubmit="searchPokemon(event)">
+        <input type="text" name="pokemon" autocomplete="off" placeholder="Search Pokemon">
+        <button type="submit">Search</button> <!-- Botón de búsqueda -->
+        <!-- <button type="button" onclick="resetSearch()">Borrar</button> -->
+    </form>
+
+    <!-- Contenedor para los resultados de búsqueda -->
+        <div id="pokemon-search-results" class="search-results">
+            <!-- Aquí se mostrarán las tarjetas de los Pokémon o el mensaje de "Pokémon no encontrado" -->
+        </div>
+
+        <div id="data-poke-container" class="poke-container">
+         <!-- Aquí se renderizarán las cartas de los Pokémon  -->
+        </div> 
+        
+        <div id="poke-detail-container" class="poke-detail hidden">
+            <!-- Aquí se mostrarán los detalles del Pokémon al hacer clic en la carta -->
+        </div>
+
+        <div id="pokemon-card">
+            <!-- Aquí se insertarán los detalles del Pokémon -->
+        </div>
+            
+
+    <!-- <div data-poke-card class="poke-card">
+        <div data-poke-name>Pokedex</div>
+        <div data-poke-img-container class="img-container">
+            <img data-poke-img src="img/poke-shadow.png" class="poke-img" alt=""/>
+        </div>
+        <div data-poke-id></div>
+        <div data-poke-types class="poke-types"></div>
+        <div data-poke-stats class="poke-stats"></div>
+    </div>   -->
+
+
+</body>
+</html>
