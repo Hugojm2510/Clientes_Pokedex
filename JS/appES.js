@@ -23,11 +23,12 @@ const typeColors = {
     dragon: '#DA627D',
     steel: '#1D8A99',
     fighting: '#2F2F2F',
+    fairy: '#561D20',
     default: '#2A1A1F',
 };
 
 
-// Naturalezas y sus efectos
+// Definición de las naturalezas, depende de la naturaleza aumenta o disminuye los stats.
 const naturalezas = {
     Firme: { aumenta: 'attack', reduce: 'special-attack' },
     Osada: { aumenta: 'defense', reduce: 'attack' },
@@ -44,7 +45,7 @@ const naturalezas = {
 };
 
 
-// Fórmulas para calcular estadísticas totales
+// Rórmula para calcular los stats: primera para la vida, segunda para los demás
 function calcularStatsTotales(baseStats, iv, ev, nivel, multiplicador) {
     if (baseStats === 'hp') {
         return Math.floor(((2 * iv + ev / 4) * nivel) / 100 + nivel + 10);
@@ -55,14 +56,14 @@ function calcularStatsTotales(baseStats, iv, ev, nivel, multiplicador) {
 
 // Funcion de calcular stats finales
 function calcularStatsFinales(baseStats, ivs, evs, nivel, naturaleza) {
-    console.log("Base Stats recibidos:", baseStats);
-    console.log("IVs antes de llamar a la función:", ivs);
-    console.log("EVs antes de llamar a la función:", evs);
-    console.log("Naturaleza seleccionada:", naturaleza);
     const stats = { ...baseStats }; // Copiar stats base
     const efecto = naturalezas[naturaleza];
 
-    // Recalcular cada stat
+    /*
+    El código calcula un multiplicador para cada estadística (stat) del Pokémon
+    dependiendo de la naturaleza seleccionada:
+    */
+
     Object.keys(stats).forEach(stat => {
         const multiplicador = efecto
             ? stat === efecto.aumenta
@@ -72,6 +73,7 @@ function calcularStatsFinales(baseStats, ivs, evs, nivel, naturaleza) {
                 : 1
             : 1;
 
+        // calcula los stats finales, a partir de la fórmula de arriba
         stats[stat] = calcularStatsTotales(baseStats[stat], ivs[stat], evs[stat], nivel, multiplicador);
     });
     console.log("Efecto de la naturaleza:", efecto);
@@ -83,16 +85,17 @@ function calcularStatsFinales(baseStats, ivs, evs, nivel, naturaleza) {
 
 
 
-
+// El fetch a la API de Pokemon
 const fetchAllPokemons = async () => {
     try {
-        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000"); // O el límite que desees
+        // hacemos el fetch a la API, poniendo el limite en 1000
+        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000");
         const data = await response.json();
         allPokemon = data.results; // Almacenamos todos los Pokémon
 
-        // Ahora obtenemos los detalles de cada Pokémon
+        // Aquí obtenemos los datos del Pokemon
         const pokemonDetails = await Promise.all(allPokemon.map(async (pokemon) => {
-            const pokemonResponse = await fetch(pokemon.url); // Accedemos a la URL de cada Pokémon
+            const pokemonResponse = await fetch(pokemon.url);
             const pokemonData = await pokemonResponse.json();
             return {
                 name: pokemonData.name,
@@ -111,7 +114,7 @@ const fetchAllPokemons = async () => {
 
 
 
-// barra de búsqueda
+// Barra de búsqueda
 const searchPokemon = async (event) => {
     event.preventDefault();
     const { value } = event.target.pokemon;
@@ -124,6 +127,7 @@ const searchPokemon = async (event) => {
     }
 
     try {
+        // aqui hacemos fetch para extraer los datos del pokemon que se ha buscado
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${busqueda}`);
         if (!response.ok) throw new Error("Pokémon no encontrado");
         const data = await response.json();
@@ -141,7 +145,8 @@ const searchPokemon = async (event) => {
             types: data.types.map(type => type.type.name),
         });
 
-        searchResultsContainer.appendChild(card);  // Mostrar la tarjeta de Pokémon encontrado
+        // Aqui muestra los datos encontrados del pokemon, en la carta, con el getMinPoke
+        searchResultsContainer.appendChild(card); 
 
     } catch (error) {
         renderNotFound();
@@ -150,22 +155,8 @@ const searchPokemon = async (event) => {
 
 
 
-const resetSearch = () => {
-    // Limpiar el campo de entrada
-    document.querySelector('input[name="pokemon"]').value = "";
-
-    // Restaurar el contenedor de búsqueda
-    const searchResultsContainer = document.getElementById("pokemon-search-results");
-    searchResultsContainer.innerHTML = "";
-
-    // Renderizar las cartas de Pokémon paginadas nuevamente
-    renderCurrentPage();
-    updateNavigationButtons();
-};
-
-
-
-// la carta que sale si no existe el pokemon
+// Aqui en caso de que el pokemon no este escrito correctamente o no exista, salta una carta como
+// getMinPoke, pero con el texto "no encontrado" y una img "poke-shadow"
 const renderNotFound = () => {
     // Seleccionar el contenedor donde se mostrarán las tarjetas
     const searchResultsContainer = document.getElementById("pokemon-search-results");
@@ -187,32 +178,29 @@ const renderNotFound = () => {
 }
 
 
-
+// llama al fetch
+// selecciona el form del index
+// añade un evento al submit de la barra
 document.addEventListener("DOMContentLoaded", () => {
-    fetchAllPokemons(); // Llamada a la función que obtiene los Pokémon
+    fetchAllPokemons();
     const searchForm = document.querySelector("form");
     searchForm.addEventListener("submit", searchPokemon);
 });
 
 
+// Idioma predeterminado
+let currentLanguage = 'es';
 
 
-
-
-
-
-
-let currentLanguage = 'es'; // Idioma predeterminado
-
-
-
-// Ajuste en getMinPoke para pasar datos correctamente
+// Funcion getMinPoke
+// se encarga de crear la carta con los datos básicos: nombre, foto, id, tipos
 const getMinPoke = ({ photo, name, id, types }) => {
+
     const card = document.createElement('div');
     card.className = 'poke-card';
 
+    // almacena el tipo/s del pokemon
     const pokemonTypes = types?.map(type => type) || [];
-    // const pokemonTypes = types?.map(type => translate(`types.${type}`, currentLanguage)) || [];
 
     card.innerHTML = `
         <div class="poke-name">${name}</div>
@@ -229,6 +217,7 @@ const getMinPoke = ({ photo, name, id, types }) => {
         </div>
     </div>
     `; 
+    // añadimos el evento de al hacer clic, te renderice los detalles del pokemon
     card.addEventListener('click', () => {
         const pokemonDetailContainer = document.getElementById('pokemon-search-results');
         pokemonDetailContainer.innerHTML = '';
@@ -290,9 +279,6 @@ function updatePageLanguage() {
 }
 
 // Asignar el evento al botón de cambio de idioma
-
-
-
 async function translateAbilities(abilities, language = 'es') {
     return await Promise.all(
         abilities.map(async (ability) => {
@@ -311,7 +297,7 @@ async function translateAbilities(abilities, language = 'es') {
 
 
 
-
+// funcion que se encargar de mostrar los detalles visualmente
 async function getAPoke(pokemon) {
     const {photo, name, id, types, abilities, baseStats} = pokemon;
 
@@ -385,11 +371,11 @@ async function getAPoke(pokemon) {
     </div>
     `;
 
+    // ponemos el color de fondo de la carta con el color principal
     const pokeCard = card.querySelector('.poke-card');
     pokeCard.style.backgroundColor = mainTypeColor;
 
     console.log("Stats", baseStats);
-    // card.style.backgroundColor = typeColors[tipos[0]];
 
     const statsContainer = card.querySelector('#stats-calculation');
     const selectNaturaleza = card.querySelector('#naturaleza-select');
@@ -417,10 +403,6 @@ async function getAPoke(pokemon) {
         const naturalezaSeleccionada = selectNaturaleza.value;
         const statsFinales = calcularStatsFinales(baseStats, ivs, evs, nivel, naturalezaSeleccionada);
 
-        console.log("Naturaleza seleccionada:", naturalezaSeleccionada);
-        console.log("Nivel seleccionado:", nivel);
-        console.log("Stats Finales calculados:", statsFinales);
-
         statsContainer.innerHTML = Object.entries(statsFinales).map(([stat, valor]) => {
             const translatedStat = translate(`stats.${stat}`, currentLanguage); // Traducir la clave de la estadística
             return `
@@ -430,8 +412,7 @@ async function getAPoke(pokemon) {
     }
 
 
-
-    // Eventos para capturar cambios en los inputs
+    // Estos tres bloques se encargan de guardar los valores de los inputs
     nivelInput.addEventListener('input', (e) => {
         nivel = parseInt(e.target.value) || 1;
         actualizarStats();
@@ -466,20 +447,18 @@ async function getAPoke(pokemon) {
 
 
 
-// Renderizar detalles de un Pokémon
+// Renderizar los detalles del Pokémon
 async function renderPokemonDetails(id) {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     const data = await response.json();
 
-    // Extraer estadísticas base del Pokémon
+    // Guarda las estadísticas base
     const baseStats = data.stats.reduce((acc, stat) => {
         acc[stat.stat.name] = stat.base_stat;
         return acc;
     }, {});
 
-    console.log("Base Stats:", baseStats); // Verificar las estadísticas base
-
-
+    // prepara los datos del pokemon y se los pasa al getAPoke    
     const card = await getAPoke({
         photo: data.sprites.front_default,
         name: data.name,
@@ -497,7 +476,6 @@ async function renderPokemonDetails(id) {
         naturalezas: Object.keys(naturalezas),
     });
 
-    currentPage = data.id; //Con esta asigancion manual hacemos que si entramos en el pokemos que hemos buscado, la página cambiará a la equivalente a la del numero de ese pokemon.
 
     const container = document.querySelector('#data-poke-container');
     if (container) {
@@ -509,7 +487,7 @@ async function renderPokemonDetails(id) {
 }
 
 
-// Renderizar estadísticas
+// Se encargar de renderizar las estadísticas
 const renderPokemonStats = (stats) => {
     pokeStats.innerHTML = '';
     stats.forEach(stat => {
@@ -534,18 +512,19 @@ const pokemons_por_pag = 12;
 let currentPage = 1;
 let allPokemon = [];
 
-
+// En este apartado se encarga de administrar el nº de pokemons por paginas
+// aclarado en la const "pokemons_por_pag".
 const paginatePokemons = (allPokemon, page) => {
     const startIndex = (page - 1) * pokemons_por_pag;
     const endIndex = page * pokemons_por_pag;
     return allPokemon.slice(startIndex, endIndex);
 }
 
+// se encarga de renderizar los pokemons que corresponde a la pagina actual
 const renderCurrentPage = () => {
     const paginatedPokemons = paginatePokemons(allPokemon, currentPage);
     const container = document.getElementById("data-poke-container");
     container.innerHTML = "";
-
 
     paginatedPokemons.forEach((pokemon, index) => {
         const card = getMinPoke(pokemon);
@@ -553,6 +532,7 @@ const renderCurrentPage = () => {
     });
 }
 
+// En este apartado se encarga de los botones de navegacion
 const updateNavigationButtons = () => {
     const prevButton = document.querySelector("#prevButton");
     const nextButton = document.querySelector("#nextButton");
@@ -578,10 +558,12 @@ document.querySelector("#nextButton").addEventListener("click", () => {
 });
 
 
-
 const container = document.querySelector('#data-poke-container');
 if (container) {
-    container.innerHTML = ''; // Limpiar detalles del Pokémon
-    renderCurrentPage(); // Restaurar la lista de Pokémon
-    updateNavigationButtons(); // Asegurarse de que los botones de navegación estén actualizados
+    // Limpiar detalles del Pokémon
+    container.innerHTML = '';
+    // Restaurar la lista de Pokémon
+    renderCurrentPage(); 
+    // Asegurarse de que los botones de navegación estén actualizados
+    updateNavigationButtons(); 
 }
